@@ -1,11 +1,3 @@
-#포스코 청년 AI Bigdata 아카데미 A반 4조 
-#온라인 시험 부정 행위 방지 시스템
-
-############POSCAS############
-#https://github.com/JoyLeeA
-# 자세한 설명 수록
-
-#### FOR FACE IDENTIFY ####
 import numpy as np
 from keras.models import load_model
 from mtcnn.mtcnn import MTCNN

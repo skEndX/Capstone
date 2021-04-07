@@ -3,6 +3,7 @@ import cv2
 from .pupil import Pupil
 
 
+
 class Calibration(object):
     """
     This class calibrates the pupil detection algorithm by finding the

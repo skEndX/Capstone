@@ -1,0 +1,7 @@
+dlib
+numpy
+opencv-python
+pygame
+keras
+pillow
+mtcnn

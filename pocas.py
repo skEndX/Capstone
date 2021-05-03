@@ -43,19 +43,19 @@ def Fail(timee, redcard):
 
 
 def get_embedding(model, face_pixels):
-	# scale pixel values
-	face_pixels = face_pixels.astype('float32')
-	# standardize pixel values across channels (global)
-	mean, std = face_pixels.mean(), face_pixels.std()
-	face_pixels = (face_pixels - mean) / std
-	# print(face_pixels.shape)
+    # scale pixel values
+    face_pixels = face_pixels.astype('float32')
+    # standardize pixel values across channels (global)
+    mean, std = face_pixels.mean(), face_pixels.std()
+    face_pixels = (face_pixels - mean) / std
+    # print(face_pixels.shape)
     # transform face into one sample
     # expand dims adds a new dimension to the tensor
-	samples = np.expand_dims(face_pixels, axis=0)
-	# print(samples.shape)
+    samples = np.expand_dims(face_pixels, axis=0)
+    # print(samples.shape)
     # make prediction to get embedding
-	yhat = model.predict(samples)
-	return yhat[0]
+    yhat = model.predict(samples)
+    return yhat[0]
 
 # Print Result
 
@@ -119,11 +119,11 @@ def main(args):
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = faceCascade.detectMultiScale(
-        gray,
-        scaleFactor=1.1,
-        minNeighbors=3,
-        minSize=(30, 30),
-        flags=cv2.CASCADE_SCALE_IMAGE)  # face structure
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=3,
+            minSize=(30, 30),
+            flags=cv2.CASCADE_SCALE_IMAGE)  # face structure
 
         # Get point from pupil
         if gaze.is_blinking():
@@ -216,12 +216,10 @@ def main(args):
             predict_names = out_encoder.inverse_transform(pred)
             text = '%s (%.3f%%)' % (predict_names[0], class_probability)
 
-
-<< << << < HEAD
             # add the name to frame but only if the pred is above a certain threshold
             if (class_probability > 70):
                 cv2.putText(frame, text, (x, y),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
         # Display the resulting frame
             cv2.imshow('POCAS', frame)
@@ -234,58 +232,26 @@ def main(args):
             print(timee, "분의 시험이 종료되었습니다.")
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
-            break 
-
-    # When everything done, release the webcam
-    webcam.release()
-    if isVideo: 
-        out.release()
-        cv2.destroyAllWindows()
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-i', metavar='FILE', dest='input_file', default=None, help='Input video. If not given, web camera will be used.')
-    parser.add_argument('-o', metavar='FILE', dest='output_file', default=None, help='Output video.')
-    parser.add_argument('-wh', metavar='N', dest='wh', default=[720, 480], nargs=2, help='Frame size.')
-    parser.add_argument('-lt', metavar='N', dest='landmark_type', type=int, default=1, help='Landmark type.')
-    parser.add_argument('-lp', metavar='FILE', dest='landmark_predictor', default='gaze_tracking/trained_models/shape_predictor_68_face_landmarks.dat', help="Landmark predictor data file.")
-    args = vars(parser.parse_args())
-    main(args)
-
-            # add the name to frame but only if the pred is above a certain threshold
-            if (class_probability > 70):
-                cv2.putText(frame, text, (x, y),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
-
-        # Display the resulting frame
-            cv2.imshow('POCAS', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            print("관리자에 의해 시험이 강제 종료 되었습니다")
-            PrintResult(yellocard, redcard)
-            Fail(timee, redcard)
             break
-        elif time.time() > max_time_end:
-            print(timee, "분의 시험이 종료되었습니다.")
-            PrintResult(yellocard, redcard)
-            Fail(timee, redcard)
-            break 
 
     # When everything done, release the webcam
     webcam.release()
-    if isVideo: 
+    if isVideo:
         out.release()
         cv2.destroyAllWindows()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', metavar='FILE', dest='input_file', default=None, help='Input video. If not given, web camera will be used.')
-    parser.add_argument('-o', metavar='FILE', dest='output_file', default=None, help='Output video.')
-    parser.add_argument('-wh', metavar='N', dest='wh', default=[720, 480], nargs=2, help='Frame size.')
-    parser.add_argument('-lt', metavar='N', dest='landmark_type', type=int, default=1, help='Landmark type.')
-    parser.add_argument('-lp', metavar='FILE', dest='landmark_predictor', default='gaze_tracking/trained_models/shape_predictor_68_face_landmarks.dat', help="Landmark predictor data file.")
+    parser.add_argument('-i', metavar='FILE', dest='input_file', default=None,
+                        help='Input video. If not given, web camera will be used.')
+    parser.add_argument('-o', metavar='FILE', dest='output_file',
+                        default=None, help='Output video.')
+    parser.add_argument('-wh', metavar='N', dest='wh',
+                        default=[720, 480], nargs=2, help='Frame size.')
+    parser.add_argument('-lt', metavar='N', dest='landmark_type',
+                        type=int, default=1, help='Landmark type.')
+    parser.add_argument('-lp', metavar='FILE', dest='landmark_predictor',
+                        default='gaze_tracking/trained_models/shape_predictor_68_face_landmarks.dat', help="Landmark predictor data file.")
     args = vars(parser.parse_args())
     main(args)
-
-	
->>>>>>> f27e26df4a210aaef4db921eea847a38aed31d64

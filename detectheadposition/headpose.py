@@ -140,6 +140,7 @@ class HeadposeDetection():
             
     def get_history_len(self):
         return len(self.history['lm'])
+    
             
     def get_ma(self):
         res = []

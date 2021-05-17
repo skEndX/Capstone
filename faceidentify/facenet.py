@@ -5,7 +5,7 @@
 import numpy as np
 from keras.models import load_model
 
-model = load_model('./models/facenet_keras.h5')
+model = load_model('C:/Capstone/models/facenet_keras.h5')
 print('model loaded')
 
 # get the face embedding for one face
@@ -24,7 +24,7 @@ def get_embedding(model, face_pixels):
 	yhat = model.predict(samples)
 	return yhat[0]
 
-data = np.load('FriendsDataset.npz')
+data = np.load('C:/Capstone/FriendsDataset.npz')
 trainX, trainy, valX, valy = data['arr_0'], data['arr_1'], data['arr_2'], data['arr_3']
 print('Loaded: ', trainX.shape, trainy.shape, valX.shape, valy.shape)
 
@@ -44,7 +44,7 @@ for face_pixels in valX:
 newValX = np.asarray(newValX)
 print(newValX.shape)
 
-np.savez_compressed('FriendsFaceEmbeddingData.npz', newTrainX, trainy, newValX, valy)
+np.savez_compressed('C:/Capstone/FriendsFaceEmbeddingData.npz', newTrainX, trainy, newValX, valy)
 
 # from now on, we get face embeddings for each face image
 # now we can use these to make predictions using an SVM. 

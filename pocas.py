@@ -67,8 +67,8 @@ def notnegative(x):
 # main function
 def main(args):
     filename = args["input_file"]
-    faceCascade = cv2.CascadeClassifier('models/haarcascade_frontalface_default.xml')
-    model = load_model('models/facenet_keras.h5')
+    faceCascade = cv2.CascadeClassifier('C:/Capstone/models/haarcascade_frontalface_default.xml')
+    model = load_model('C:/Capstone/models/facenet_keras.h5')
 
     if filename is None:
         isVideo = False
@@ -226,5 +226,3 @@ if __name__ == '__main__':
     parser.add_argument('-lp', metavar='FILE', dest='landmark_predictor', default='gaze_tracking/trained_models/shape_predictor_68_face_landmarks.dat', help="Landmark predictor data file.")
     args = vars(parser.parse_args())
     main(args)
-
-	

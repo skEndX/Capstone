@@ -7,6 +7,7 @@ from faceidentify.SVMclassifier import model as svm
 from faceidentify.SVMclassifier import out_encoder
 
 #### FOR GAZE AND MOTION ####
+import time
 import argparse
 import cv2
 import os.path as osp
@@ -33,8 +34,6 @@ def Sound():
     time.sleep(5)
 
 # Settle Cheater
-
-
 def Fail(timee, redcard):
     if redcard >= timee/3:
         print("===부정행위자 입니다===")
@@ -74,25 +73,27 @@ def notnegative(x):
     else:
         return x
 
+
+
 # main function
-
-
 def main(args):
     filename = args["input_file"]
-<<<<<<< HEAD
+#<<<<<<< HEAD
     faceCascade = cv2.CascadeClassifier('C:/Capstone/models/haarcascade_frontalface_default.xml')
     model = load_model('C:/Capstone/models/facenet_keras.h5')
-=======
+#=======
     faceCascade = cv2.CascadeClassifier(
         'models/haarcascade_frontalface_default.xml')
     model = load_model('models/facenet_keras.h5')
->>>>>>> 757e3559f2acad057224670a45fca1fc2d17309e
+#>>>>>>> 757e3559f2acad057224670a45fca1fc2d17309e
 
     if filename is None:
         isVideo = False
+        #url='http://192.168.0.06:8091/?action=stream'
+        #webcam = cv2.VideoCapture(url)
         webcam = cv2.VideoCapture(0)
         webcam.set(3, args['wh'][0])
-        webcam.set(4, args['wh'][1])
+        webcam.set(4, args['wh'][1])       
     else:
         isVideo = True
         webcam = cv2.VideoCapture(filename)
@@ -103,7 +104,59 @@ def main(args):
         name, ext = osp.splitext(filename)
         out = cv2.VideoWriter(args["output_file"],
                               fourcc, fps, (width, height))
+        
 
+
+    UserName = (input("시험응시자의 이름을 입력하시오.: "))
+    checktime = 1
+    start_check= time.time() + (10 * checktime)
+    checktime_end = time.time() + (60 * checktime)
+    while (webcam.isOpened()):# Infinity Loop for Detect Cheating for Online test
+        ret, frame = webcam.read()  # Read wabcam
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = faceCascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=3,
+            minSize=(30, 30),
+            flags=cv2.CASCADE_SCALE_IMAGE)  # face structure
+        for (x, y, w, h) in faces:
+            # take the face pixels from the frame
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            # turn the face pixels back into an image
+            crop_frame = frame[y:y+h, x:x+w]
+            # resize the image to meet the size requirment of facenet
+            new_crop = Image.fromarray(crop_frame)
+            # turn the image back into a tensor
+            new_crop = new_crop.resize((160, 160))
+            # get the face embedding using the face net model
+            crop_frame = np.asarray(new_crop)
+            # it is a 1d array need to reshape it as a 2d tensor for svm
+            face_embed = get_embedding(model, crop_frame)
+            # predict using our SVM model
+            face_embed = face_embed.reshape(-1, face_embed.shape[0])
+            pred = svm.predict(face_embed)  # get the prediction probabiltiy
+            # pred_prob has probabilities of each class
+            pred_prob = svm.predict_proba(face_embed)
+
+            # get name
+            class_index = pred[0]
+            class_probability = pred_prob[0, class_index] * 100
+            predict_names = out_encoder.inverse_transform(pred)
+            text = '%s (%.3f%%)' % (predict_names[0], class_probability)
+            cv2.putText(frame, text, (x, y),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        
+        cv2.imshow('capstone', frame)
+        cv2.waitKey(1)   
+        if(time.time() > start_check and predict_names[0]==UserName and class_probability > 80):
+            print("얼굴이 일치합니다. 시험을 시작하겠습니다.")
+            break 
+        if time.time() > checktime_end:
+           print("얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
+           quit()
+           break 
+       
     # Variable Setting
     hpd = headpose.HeadposeDetection(
         args["landmark_type"], args["landmark_predictor"])  # import headpose
@@ -115,9 +168,9 @@ def main(args):
     timee = int(input("시험 시간을 입력하세요(Minute): "))
     max_time_end = time.time() + (60 * timee)
 
-    # Infinity Loop for Detect Cheating for Online test
-    while(webcam.isOpened()):
 
+    check_angle=time.time()+(10*checktime)
+    while(webcam.isOpened()):# Infinity Loop for Detect Cheating for Online test
         ret, frame = webcam.read()  # Read wabcam
         gaze.refresh(frame)
         frame = gaze.annotated_frame()  # Mark pupil for frame
@@ -168,10 +221,10 @@ def main(args):
             cv2.imshow('Warning', warn_img)
             cv2.waitKey(1)
             redcard = 2.1
-    # -----------------------------------------------------------------------
+    # -----------------------------s------------------------------------------
         # Get log consistently
-        print("<< *의심수준::", yellocard, " || ", "*경고횟수:", redcard, " >>")
-
+        print("<< *의심수준:", yellocard, " || ", "*경고횟수:", redcard, " >>")
+        #cv2.destroyWindow('Warning')
         # Detect head position
         if isVideo:
             frame, angles = hpd.process_image(frame)
@@ -181,9 +234,17 @@ def main(args):
                 out.write(frame)
         else:
             frame, angles = hpd.process_image(frame)
-
             if angles is None:
-                pass
+                print("경고! 응시자가 사라졌습니다")
+                if time.time() > check_angle:
+                    redcard= timee/3+ redcard
+                    print("지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
+                    PrintResult(yellocard, redcard)
+                    Fail(timee, redcard)
+                    quit()
+                else:
+                    pass
+                
             else:  # angles = [x,y,z] , get point from headposition
                 if angles[0] > 15 or angles[0] < -15 or angles[1] > 15 or angles[1] < -15 or angles[2] > 15 or angles[2] < -15:
                     yellocard = yellocard + 2
@@ -195,39 +256,8 @@ def main(args):
         if yellocard < 0:
             yellocard = notnegative(yellocard)
 
-       # Draw a rectangle around the faces and predict the face name
-        for (x, y, w, h) in faces:
-            # take the face pixels from the frame
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            # turn the face pixels back into an image
-            crop_frame = frame[y:y+h, x:x+w]
-            # resize the image to meet the size requirment of facenet
-            new_crop = Image.fromarray(crop_frame)
-            # turn the image back into a tensor
-            new_crop = new_crop.resize((160, 160))
-            # get the face embedding using the face net model
-            crop_frame = np.asarray(new_crop)
-            # it is a 1d array need to reshape it as a 2d tensor for svm
-            face_embed = get_embedding(model, crop_frame)
-            # predict using our SVM model
-            face_embed = face_embed.reshape(-1, face_embed.shape[0])
-            pred = svm.predict(face_embed)  # get the prediction probabiltiy
-            # pred_prob has probabilities of each class
-            pred_prob = svm.predict_proba(face_embed)
-
-            # get name
-            class_index = pred[0]
-            class_probability = pred_prob[0, class_index] * 100
-            predict_names = out_encoder.inverse_transform(pred)
-            text = '%s (%.3f%%)' % (predict_names[0], class_probability)
-
-            # add the name to frame but only if the pred is above a certain threshold
-            if (class_probability > 70):
-                cv2.putText(frame, text, (x, y),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
         # Display the resulting frame
-            cv2.imshow('POCAS', frame)
+            cv2.imshow('capstone', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             print("관리자에 의해 시험이 강제 종료 되었습니다")
             PrintResult(yellocard, redcard)
@@ -241,6 +271,8 @@ def main(args):
 
     # When everything done, release the webcam
     webcam.release()
+    cv2.destroyAllWindows()
+    quit()
     if isVideo:
         out.release()
         cv2.destroyAllWindows()
@@ -259,8 +291,8 @@ if __name__ == '__main__':
     parser.add_argument('-lp', metavar='FILE', dest='landmark_predictor',
                         default='gaze_tracking/trained_models/shape_predictor_68_face_landmarks.dat', help="Landmark predictor data file.")
     args = vars(parser.parse_args())
-<<<<<<< HEAD
+#<<<<<<< HEAD
     main(args)
-=======
+#=======
     main(args)
->>>>>>> 757e3559f2acad057224670a45fca1fc2d17309e
+#>>>>>>> 757e3559f2acad057224670a45fca1fc2d17309e

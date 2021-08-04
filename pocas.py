@@ -39,6 +39,9 @@ from tkinter import ttk
 
 from PIL import Image, ImageTk
 import cv2
+
+# 메세지 import
+from tkinter import messagebox
  
 ####################### window 1
 window = tkinter.Tk()
@@ -55,80 +58,63 @@ def buttonClicked():
     label.configure()
     #labelNew.configure(text='잠시만 기다려주세요')
     #print(name.get())
-    global name1
+    global name1, time1
     name1=name.get() #입력한 이름 받아오기
+    time1=TestTime.get()
     
-    
+
+    print("이름과 시간")
+    print(name1)
+    print(time1)
+
+
     if(name1==""):
 
-        nameLabel=labelNew.configure(font=("나눔고딕",15),text="공란입니다 다시 입력해주세요/이름")
-        labelNew1.place(x=200,y=400)  
+        nameLabel=labelNew.configure(font=("나눔고딕",15),text="이름을 확인해주세요")
+        labelNew1.place(x=240,y=400)  
 
-                
+    elif(time1==""):
+        nameLabel=labelNew.configure(font=("나눔고딕",15),text="시간을 확인해주세요")
+        labelNew1.place(x=240,y=400)  
 
     else:
-        #window.after(1000, main(args))
-        print("이름이 들어감")
-
         nameLabel=labelNew.configure(font=("나눔고딕",15),text="잠시만 기다리세요")
         labelNew1.place(x=250,y=400)  
 
+        
+
+        messagebox.showinfo("확인","얼굴을 확인합니다") # 팝업 이름, 팝업 메세지
+
         main(args)
-
-        #window.after(1000, main(args)) #### 3초 후 메인 함수로
-
-        # 비동기식 만드려고 했음
-        # loop = asyncio.get_event_loop()
-        # loop.run_until_complete(test())   
-        
-        
-        #window.after(1000, main(args)) #### 3초 후 메인 함수로
-        #FirstFace(name1)
-        
-        #window.after(1000,pop()) #오류뜨면서 동작 안함
 
 # async def test():
 #     nameLabel=labelNew.configure(font=("나눔고딕",15),text="시간 지났나")
 #     labelNew1.place(x=200,y=400)   
 
-############
-def buttonClicked2():
-    #label.configure()
-    
-    global time1
-    time1=timeText.get() #입력한 시간 받아오기
-
-    print("버튼 클릭하고 시간 넘어갸나") # 시간 입력은 잘 됨
-    print(time1)
-     
-    if(time1==""):
-        #  timeLabel=labelNew.configure(font=("나눔고딕",15),text="공란입니다 다시 입력해주세요/시간")
-        #  labelNew1.place(x=200,y=400)      
-         print("공란")   
-
-
-    else:
-    
-        # timeLabel=labelNew.configure(font=("나눔고딕",15),text="에러가 뜨는 이유가 뭘까")
-        # labelNew1.place(x=200,y=400)    
-        print("공란이 아님 ")
-
-        # main문 특정 부부을 실행하도록 하는게 맞다고 생각하거든? 일단 window2에 넣어야 할 것 같은데
-    
-
-#
 ##################################
-label=ttk.Label(window,font=("나눔고딕",25), text="이름을 입력하세요")
-label.place(x=190,y=170)
+label=ttk.Label(window,font=("나눔고딕",23), text="시험 정보를 입력하세요")
+label.place(x=160,y=150)
 
 # Text Box
-name = tkinter.StringVar()
-textbox1=textbox = ttk.Entry(window, width=15, textvariable=name)
+name , TestTime= tkinter.StringVar(),tkinter.StringVar()
+
+# 이름을 넣는 칸
+label=ttk.Label(window,font=("나눔고딕",15), text="이름")
+label.place(x=200,y=228)
+textbox1 = ttk.Entry(window, width=15, textvariable=name)
 textbox1.place(x=265,y=230)
+
+# 시간 넣는 칸
+label=ttk.Label(window,font=("나눔고딕",15), text="시험 시간")
+label.place(x=175,y=268)
+textbox2 = ttk.Entry(window, width=15, textvariable=TestTime)
+textbox2.place(x=265,y=270)
+
+
 
 # Button
 button1=button = ttk.Button(window,width=10, command=buttonClicked,text="확인")
-button1.place(x=280,y=270)
+button1.place(x=280,y=320)
 
 # Label
 labelNew1=labelNew = ttk.Label(window, text="")
@@ -185,15 +171,6 @@ def notnegative(x):
 
 
 
-###################
-
-def test():
-    print("main문 에서 호출이 되냐")
-
-
-########################
-
-
 # main function
 def main(args):
     filename = args["input_file"]
@@ -232,8 +209,9 @@ def main(args):
     UserName = name1
 
     # 이름 제대로 들어가는지 테스트 -> 이름 제대로 들어감
-    # print('main 문 ')
-    # print(name1)
+    print('main 문 ')
+    print(name1)
+    print(time1)
     # ##############################
 
 
@@ -281,61 +259,21 @@ def main(args):
 
         
         if(time.time() > start_check and predict_names[0]==UserName and class_probability > 80):
-            window.destroy() # 첫번째 화면 닫고
-            window2=tkinter.Tk() # 새로운 화면 열기
-
-            ## window 창 설정 ########################################## 
-             # title
-            window2.title("임베부스러기") # window 제목
-            # geomerty
-            window2.geometry('640x500+100+100') # window 창 사이즈
-            # preventing GUI from resizing
-            window2.resizable(False, False) # 창 조절 불가
-            #########################################################
-
-
-            label = ttk.Label(window2,font=("나눔고딕",20), text="얼굴이 일치합니다")
-            label.place(x=220,y=70)
-
-            label=ttk.Label(window2,font=("나눔고딕",25), text="시간을 입력하세요")
-            label.place(x=190,y=170)
-
-            label = ttk.Label(window2,font=("나눔고딕",20), text="분")
-            label.place(x=380,y=220)
-
-            # Text Box
-            global timeText
-            timeText = tkinter.StringVar()
-            textbox1=textbox = ttk.Entry(window2, width=15, textvariable=timeText)
-            textbox1.place(x=265,y=230)
-
-            #############################################################
-            ### time1이 안 넘어 옴 ######################
-            #############################################################
-            # Button
-            button1=button = ttk.Button(window2,width=10,command=buttonClicked2,text="확인")
-            button1.place(x=280,y=270)
-
-            # Label
-            labelNew1=labelNew = ttk.Label(window2, text="")
-            window2.mainloop()
-
+           
+            #print("얼굴이 일치합니다. 시험을 시작하겠습니다.")
+            messagebox.showinfo("확인","얼굴이 일치합니다. 시험을 시작합니다")
             break 
 
        
 
         if time.time() > checktime_end:
-            labelNew1.configure(font=("나눔고딕",15),text='얼굴이 일치하지 않아 시험에 응시하지 못합니다.')
-            labelNew1.place(x=100,y=400)
+            #print("얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
+            messagebox.showinfo("확인","얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
             quit()
-            window.destroy() #UI 화면 닫기
+            window.destroy() # UI 화면 닫기
             break 
        
        ##################################################################################
-
-
-
-
 
 
        #########################################################################
@@ -349,15 +287,15 @@ def main(args):
 
 
     # main문으로 시간 전달 되는지 확인
-    print("메인문 안의 시간")
-    print(time1)
+    #print("메인문 안의 시간")
+    #print(time1)
     ##############
-
+    # messagebox.showinfo("중간확인","여기서는 잘 되나") #-> 잘 됨
 
 
     # Input time for limit test time
-    #timee=time1
-    timee = int(input("시험 시간을 입력하세요(Minute): "))
+    timee=int(time1)
+    #timee = int(input("시험 시간을 입력하세요(Minute): "))
     max_time_end = time.time() + (60 * timee)
 
 
@@ -420,20 +358,25 @@ def main(args):
         # Detect head position
         if isVideo:
             frame, angles = hpd.process_image(frame)
-            if frame is None:
+            if frame is None: 
                 break
             else:
                 out.write(frame)
         else:
             frame, angles = hpd.process_image(frame)
             if angles is None:
-                print("경고! 응시자가 사라졌습니다")
+                #print("경고! 응시자가 사라졌습니다")
+                messagebox.showwarning("경고","경고! 응시자가 사라졌습니다")
                 if time.time() > check_angle:
                     redcard= timee/3+ redcard
-                    print("지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
+                    #print("지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
+                    #messagebox.showinfo("확인","얼굴이 일치합니다. 시험을 시작합니다")
+                    messagebox.showwarning("경고","지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
+                    window.destroy()
                     PrintResult(yellocard, redcard)
                     Fail(timee, redcard)
                     quit()
+                    
                 else:
                     pass
                 
@@ -451,12 +394,16 @@ def main(args):
         # Display the resulting frame
             cv2.imshow('capstone', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            print("관리자에 의해 시험이 강제 종료 되었습니다")
+            #print("관리자에 의해 시험이 강제 종료 되었습니다")
+            messagebox.showwarning("경고","관리자에 의해 시험이 강제 종료 되었습니다")
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
+            window.destroy()
             break
         elif time.time() > max_time_end:
-            print(timee, "분의 시험이 종료되었습니다.")
+            #print(timee, "분의 시험이 종료되었습니다.")
+            messagebox.showinfo("수고하셨습니다","시험이 종료되었습니다.")
+            window.destroy()
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
             break
@@ -465,6 +412,7 @@ def main(args):
     webcam.release()
     cv2.destroyAllWindows()
     quit()
+    window.destroy()
     if isVideo:
         out.release()
         cv2.destroyAllWindows()
@@ -483,6 +431,8 @@ if __name__ == '__main__':
     parser.add_argument('-lp', metavar='FILE', dest='landmark_predictor',
                         default='gaze_tracking/trained_models/shape_predictor_68_face_landmarks.dat', help="Landmark predictor data file.")
     args = vars(parser.parse_args())
+
+
 
 
     window.mainloop()

@@ -116,7 +116,7 @@ def buttonClicked2():
         # main문 특정 부부을 실행하도록 하는게 맞다고 생각하거든? 일단 window2에 넣어야 할 것 같은데
     
 
-
+#
 ##################################
 label=ttk.Label(window,font=("나눔고딕",25), text="이름을 입력하세요")
 label.place(x=190,y=170)

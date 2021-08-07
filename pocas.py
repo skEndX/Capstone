@@ -14,9 +14,6 @@ import os.path as osp
 from detectheadposition import headpose
 from gaze_tracking import GazeTracking
 
-###
-
-
 #### FOR WARNING ####
 import pygame  # For play Sound
 import time  # For sleep
@@ -26,9 +23,11 @@ import threading  # For multi thread
 
 # def Msgbox1():
 #     tkinter.messagebox.showwarning("경고", "집중하세요")
+import sys #data result send
+# 결과 데이터 txt 파일 저장
+f=open('C:/Capstone/result_data.txt','a')
 
 # Warning Sound
-
 import asyncio
 import time
 
@@ -87,9 +86,7 @@ def buttonClicked():
 
         main(args)
 
-# async def test():
-#     nameLabel=labelNew.configure(font=("나눔고딕",15),text="시간 지났나")
-#     labelNew1.place(x=200,y=400)   
+
 
 ##################################
 label=ttk.Label(window,font=("나눔고딕",23), text="시험 정보를 입력하세요")
@@ -121,8 +118,6 @@ labelNew1=labelNew = ttk.Label(window, text="")
 
 
 
-
-
 def Sound():
     pygame.mixer.init()
     music = pygame.mixer.Sound("Warning/warning.wav")
@@ -133,10 +128,9 @@ def Sound():
 def Fail(timee, redcard):
     if redcard >= timee/3:
         print("===부정행위자 입니다===")
+        f.write("   부정행위자(경고누적) \n")
 
 # get the face embedding for one face
-
-
 def get_embedding(model, face_pixels):
     # scale pixel values
     face_pixels = face_pixels.astype('float32')
@@ -171,6 +165,17 @@ def notnegative(x):
 
 
 
+
+def TxtOpen():
+    messagebox.showinfo("결과출력","결과가 출력됩니다.")
+    data = open('C:/Capstone/result_data.txt', 'r')
+    contents = data.read()
+    messagebox.showinfo("결과 출력",contents)
+    f.close()
+
+
+
+
 # main function
 def main(args):
     filename = args["input_file"]
@@ -184,10 +189,14 @@ def main(args):
     model = load_model('models/facenet_keras.h5')
 #>>>>>>> 757e3559f2acad057224670a45fca1fc2d17309e
 
+
+
     if filename is None:
         isVideo = False
         #url='http://192.168.0.06:8091/?action=stream'
         #webcam = cv2.VideoCapture(url)
+
+
 
         webcam = cv2.VideoCapture(0) # 캠으로 이미지 받아오는 코드
         webcam.set(3, args['wh'][0])
@@ -206,19 +215,20 @@ def main(args):
 
     
     ##############################################################################################
-    UserName = name1
-
+   
     # 이름 제대로 들어가는지 테스트 -> 이름 제대로 들어감
-    print('main 문 ')
-    print(name1)
-    print(time1)
+    # print('main 문 ')
+    # print(name1)
+    # print(time1)
+
     # ##############################
-
-
+    UserName = name1
+    f.write(UserName+"   ")
     checktime = 1
     start_check= time.time() + (10 * checktime)
-    checktime_end = time.time() + (60 * checktime)
+    checktime_end = time.time() + (60 * checktime) #1분 동안 체크 (60)
     while (webcam.isOpened()):# Infinity Loop for Detect Cheating for Online test
+
         ret, frame = webcam.read()  # Read wabcam
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = faceCascade.detectMultiScale(
@@ -254,21 +264,31 @@ def main(args):
             cv2.putText(frame, text, (x, y),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         
-        cv2.imshow('capstone', frame)
+        cv2.imshow('capstone', frame) #-> 정상 출력 되는 코드
+        #label.after(20,frame) #-> window에 비디오 창이 열리게 끔 하고 싶었으나 안됨
+    
+
+
         cv2.waitKey(1)   
 
         
         if(time.time() > start_check and predict_names[0]==UserName and class_probability > 80):
            
             #print("얼굴이 일치합니다. 시험을 시작하겠습니다.")
-            messagebox.showinfo("확인","얼굴이 일치합니다. 시험을 시작합니다")
+            messagebox.showinfo("얼굴 확인","얼굴이 일치합니다. 시험을 시작합니다")
             break 
 
        
 
         if time.time() > checktime_end:
             #print("얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
-            messagebox.showinfo("확인","얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
+            messagebox.showerror("얼굴 확인","얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
+            f.write("    얼굴 불일치"+'\n')
+            
+
+            TxtOpen() # 작동 함
+            
+
             quit()
             window.destroy() # UI 화면 닫기
             break 
@@ -285,12 +305,6 @@ def main(args):
     redcard = 0
     tempval = 0
 
-
-    # main문으로 시간 전달 되는지 확인
-    #print("메인문 안의 시간")
-    #print(time1)
-    ##############
-    # messagebox.showinfo("중간확인","여기서는 잘 되나") #-> 잘 됨
 
 
     # Input time for limit test time
@@ -366,15 +380,21 @@ def main(args):
             frame, angles = hpd.process_image(frame)
             if angles is None:
                 #print("경고! 응시자가 사라졌습니다")
-                messagebox.showwarning("경고","경고! 응시자가 사라졌습니다")
+                #messagebox.showwarning("경고","경고! 응시자가 사라졌습니다")
                 if time.time() > check_angle:
                     redcard= timee/3+ redcard
                     #print("지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
                     #messagebox.showinfo("확인","얼굴이 일치합니다. 시험을 시작합니다")
-                    messagebox.showwarning("경고","지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
-                    window.destroy()
+                    messagebox.showerror("경고","지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
+                   
                     PrintResult(yellocard, redcard)
                     Fail(timee, redcard)
+
+
+                    TxtOpen()
+
+
+                    window.destroy()
                     quit()
                     
                 else:
@@ -395,22 +415,63 @@ def main(args):
             cv2.imshow('capstone', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             #print("관리자에 의해 시험이 강제 종료 되었습니다")
-            messagebox.showwarning("경고","관리자에 의해 시험이 강제 종료 되었습니다")
+
+            f.write("경고 횟수 : %s" %(redcard))
+            f.write("   -> 강제 종료 \n")
+
+            messagebox.showerror("경고","관리자에 의해 시험이 강제 종료 되었습니다")
+            
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
+
+
+
+            # messagebox.showinfo("결과출력","결과가 출력됩니다.")
+            # #messagebox("결과출력","결과가 출력됩니다.")
+            # data = open('C:/Capstone/result_data.txt', 'r')
+            # contents = data.read()
+            # messagebox.showinfo("결과 출력",contents)
+
+
+            TxtOpen()
+
+
             window.destroy()
+          #  f.close()
             break
         elif time.time() > max_time_end:
             #print(timee, "분의 시험이 종료되었습니다.")
-            messagebox.showinfo("수고하셨습니다","시험이 종료되었습니다.")
-            window.destroy()
+            f.write("    -> 정상 종료 \n")
+            
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
+
+
+
+            messagebox.showinfo("시험 종료","시험이 종료되었습니다.")
+            
+            #messagebox.showinfo("결과출력","결과가 출력됩니다.")
+            # data = open('C:/Capstone/result_data.txt', 'r')
+            # contents = data.read()
+            # messagebox.showinfo("결과 출력",contents)
+            
+           # f.close()
+
+
+            TxtOpen()
+
+
+            window.destroy()
             break
 
     # When everything done, release the webcam
     webcam.release()
     cv2.destroyAllWindows()
+
+
+    #TxtOpen() -> 새로운 UI 창이 뜸.. 여기에 넣으면 안될 듯
+
+
     quit()
     window.destroy()
     if isVideo:
@@ -440,3 +501,6 @@ if __name__ == '__main__':
     main(args)
  #=======
     main(args)
+
+
+f.close()

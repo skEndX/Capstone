@@ -25,7 +25,7 @@ import threading  # For multi thread
 #     tkinter.messagebox.showwarning("경고", "집중하세요")
 import sys #data result send
 # 결과 데이터 txt 파일 저장
-f=open('C:/Capstone/result_data.txt','a')
+f=open('/home/dahee/Capstone/result_data.txt','w')
 
 # Warning Sound
 import asyncio
@@ -61,47 +61,47 @@ def buttonClicked():
     time1=TestTime.get()
     
 
-    print("이름과 시간")
+    print("Name & Time")
     print(name1)
     print(time1)
 
 
     if(name1==""):
 
-        nameLabel=labelNew.configure(font=("나눔고딕",15),text="이름을 확인해주세요")
+        nameLabel=labelNew.configure(font=("나눔고딕",15),text="Name")
         labelNew1.place(x=240,y=400)  
 
     elif(time1==""):
-        nameLabel=labelNew.configure(font=("나눔고딕",15),text="시간을 확인해주세요")
+        nameLabel=labelNew.configure(font=("나눔고딕",15),text="Time")
         labelNew1.place(x=240,y=400)  
 
     else:
-        nameLabel=labelNew.configure(font=("나눔고딕",15),text="잠시만 기다리세요")
+        nameLabel=labelNew.configure(font=("나눔고딕",15),text="Waiting")
         labelNew1.place(x=250,y=400)  
 
         
 
-        messagebox.showinfo("확인","얼굴을 확인합니다") # 팝업 이름, 팝업 메세지
+        messagebox.showinfo("Check","Face Check") # 팝업 이름, 팝업 메세지
 
         main(args)
 
 
 
 ##################################
-label=ttk.Label(window,font=("나눔고딕",23), text="시험 정보를 입력하세요")
+label=ttk.Label(window,font=("나눔고딕",23), text="Test")
 label.place(x=160,y=150)
 
 # Text Box
 name , TestTime= tkinter.StringVar(),tkinter.StringVar()
 
 # 이름을 넣는 칸
-label=ttk.Label(window,font=("나눔고딕",15), text="이름")
+label=ttk.Label(window,font=("나눔고딕",15), text="Name")
 label.place(x=200,y=228)
 textbox1 = ttk.Entry(window, width=15, textvariable=name)
 textbox1.place(x=265,y=230)
 
 # 시간 넣는 칸
-label=ttk.Label(window,font=("나눔고딕",15), text="시험 시간")
+label=ttk.Label(window,font=("나눔고딕",15), text="Test Time")
 label.place(x=175,y=268)
 textbox2 = ttk.Entry(window, width=15, textvariable=TestTime)
 textbox2.place(x=265,y=270)
@@ -109,7 +109,7 @@ textbox2.place(x=265,y=270)
 
 
 # Button
-button1=button = ttk.Button(window,width=10, command=buttonClicked,text="확인")
+button1=button = ttk.Button(window,width=10, command=buttonClicked,text="Check")
 button1.place(x=280,y=320)
 
 # Label
@@ -166,10 +166,12 @@ def notnegative(x):
 
 
 def TxtOpen():
-    messagebox.showinfo("결과출력","결과가 출력됩니다.")
-    data = open('C:/Capstone/result_data.txt', 'r')
+    f.close()
+    data = open('/home/dahee/Capstone/result_data.txt', 'r')
+    #messagebox.showinfo("Result","Result")
+    #data = open('/home/dahee/Capstone/result_data.txt', 'r')
     contents = data.read()
-    messagebox.showinfo("결과 출력",contents)
+    messagebox.showinfo("Result",contents)
     f.close()
 
 
@@ -179,13 +181,11 @@ def TxtOpen():
 def main(args):
     filename = args["input_file"]
 #<<<<<<< HEAD
-    faceCascade = cv2.CascadeClassifier('C:/Capstone/models/haarcascade_frontalface_default.xml')
-    model = load_model('C:\Capstone\poscas\POSCO_AIProject_OnlineTestCheatingDetectionAiSystem-master\models/facenet_keras.h5')
+    faceCascade = cv2.CascadeClassifier('/home/dahee/Capstone/models/haarcascade_frontalface_default.xml')
+    model = load_model('/home/dahee/Capstone/models/facenet_keras.h5')
     #C:\Capstone\poscas\POSCO_AIProject_OnlineTestCheatingDetectionAiSystem-master\models
 #=======
-    faceCascade = cv2.CascadeClassifier(
-        'models/haarcascade_frontalface_default.xml')
-    model = load_model('models/facenet_keras.h5')
+
 #>>>>>>> 757e3559f2acad057224670a45fca1fc2d17309e
 
 
@@ -274,22 +274,22 @@ def main(args):
         if(time.time() > start_check and predict_names[0]==UserName and class_probability > 80):
            
             #print("얼굴이 일치합니다. 시험을 시작하겠습니다.")
-            messagebox.showinfo("얼굴 확인","얼굴이 일치합니다. 시험을 시작합니다")
+            messagebox.showinfo("Face Check","Face Match. Test Start")
             break 
 
        
 
         if time.time() > checktime_end:
             #print("얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
-            messagebox.showerror("얼굴 확인","얼굴이 일치하지 않아 시험에 응시하지 못합니다.")
-            f.write("    얼굴 불일치"+'\n')
+            messagebox.showerror("Face Check","Face don't match")
+            f.write("    Face don't match"+'\n')
             
 
             TxtOpen() # 작동 함
             
-
-            quit()
             window.destroy() # UI 화면 닫기
+            quit()
+            
             break 
        
  
@@ -381,11 +381,10 @@ def main(args):
                     redcard= timee/3+ redcard
                     #print("지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
                     #messagebox.showinfo("확인","얼굴이 일치합니다. 시험을 시작합니다")
-                    messagebox.showerror("경고","지속적으로 카메라 앵글 밖으로 나갔으므로, 시험을 강제종료합니다.")
-                   
+                    messagebox.showerror("Warning","Camera angle OUT, Test exit")
+                    f.write("Camera angle OUT")
                     PrintResult(yellocard, redcard)
                     Fail(timee, redcard)
-
 
                     TxtOpen()
 
@@ -397,7 +396,7 @@ def main(args):
                     pass
                 
             else:  # angles = [x,y,z] , get point from headposition
-                if angles[0] > 15 or angles[0] < -15 or angles[1] > 15 or angles[1] < -15 or angles[2] > 15 or angles[2] < -15:
+                if angles[0] > 20 or angles[0] < -20 or angles[1] > 20 or angles[1] < -20 or angles[2] > 20 or angles[2] < -20:
                     yellocard = yellocard + 2
                 else:
                     yellocard = yellocard - 1
@@ -413,9 +412,9 @@ def main(args):
             #print("관리자에 의해 시험이 강제 종료 되었습니다")
 
             f.write("경고 횟수 : %s" %(redcard))
-            f.write("   -> 강제 종료 \n")
+            f.write("   -> exit \n")
 
-            messagebox.showerror("경고","관리자에 의해 시험이 강제 종료 되었습니다")
+            messagebox.showerror("Warning","Exit of Test by administrator")
             
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
@@ -444,7 +443,7 @@ def main(args):
 
 
 
-            messagebox.showinfo("시험 종료","시험이 종료되었습니다.")
+            messagebox.showinfo("Test End","Test End")
             
             #messagebox.showinfo("결과출력","결과가 출력됩니다.")
             # data = open('C:/Capstone/result_data.txt', 'r')

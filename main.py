@@ -46,6 +46,12 @@ from tkinter import messagebox
 # 부정행위 시간
 from datetime import datetime
 
+# 그래프 출력, 라이브러리 미리 설치 필요
+# pip install pandas
+# pip install xlrd
+# pip install openpyxl
+import matplotlib.pyplot as plt
+
  
 # window 1
 window = tkinter.Tk()
@@ -225,7 +231,11 @@ def main(args):
     # print(name1)
     # print(time1)
 
-    # ##############################
+  # yellolist, redline 배열 선언
+    yellolist=[] # 의심 수준 
+    redline=[] # 경고횟수 기준선 (의심수준 50)
+    ###########
+
     UserName = name1
     f.write(UserName+"   ")
     checktime = 1
@@ -440,6 +450,12 @@ def main(args):
             # data = open('C:/Capstone/result_data.txt', 'r')
             # contents = data.read()
             # messagebox.showinfo("결과 출력",contents)
+		
+	    # 그래프 출력
+            plt.xlabel('Time')
+            plt.ylabel('Suspicious Level')
+            plt.plot(yellolist,'b',redline,'r-')
+            plt.show()
 
 
             TxtOpen()
@@ -469,6 +485,12 @@ def main(args):
             
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
+	
+	    # 그래프 출력
+            plt.xlabel('Time')
+            plt.ylabel('Suspicious Level')
+            plt.plot(yellolist,'b',redline,'r-')
+            plt.show()
 
             TxtOpen()
 
@@ -491,6 +513,12 @@ def main(args):
             # messagebox.showinfo("결과 출력",contents)
             
            # f.close()
+		
+	    # 그래프 출력
+            plt.xlabel('Time')
+            plt.ylabel('Suspicious Level')
+            plt.plot(yellolist,'b',redline,'r-')
+            plt.show()
 
 
             TxtOpen()

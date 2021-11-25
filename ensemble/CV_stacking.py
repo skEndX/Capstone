@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error
 
@@ -45,3 +46,6 @@ lr_final.fit(Stack_final_X_train, y_train)
 stack_final = lr_final.predict(Stack_final_X_test)
 
 print('최종 메타 모델의 예측 정확도: {0:.4f}'.format(accuracy_score(y_test, stack_final)))
+=======
+
+>>>>>>> b5e766ab3d33f0b3dfefc0b73e5ea8334242f7ca

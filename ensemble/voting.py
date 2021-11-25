@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, ExtraTreesClassifier, BaggingClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
@@ -25,3 +26,6 @@ hard_vote.fit(x_train, y_train)
 soft_vote  = VotingClassifier(models, voting='soft')
 soft_vote_cv = cross_validate(soft_vote, x_train, y_train, cv=k_fold)
 soft_vote.fit(x_train, y_train)
+=======
+
+>>>>>>> b5e766ab3d33f0b3dfefc0b73e5ea8334242f7ca

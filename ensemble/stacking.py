@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import numpy as np
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -58,3 +59,6 @@ lr_final.fit(pred, y_testing)
 final = lr_final.predict(pred)
 
 print('최종 메타 모델의 예측 정확도: {0:.4f}'.format(accuracy_score(y_testing , final)))
+=======
+
+>>>>>>> b5e766ab3d33f0b3dfefc0b73e5ea8334242f7ca

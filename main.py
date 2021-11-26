@@ -233,7 +233,7 @@ def main(args):
 
   # yellolist, redline 배열 선언
     yellolist=[] # 의심 수준 
-    redline=[] # 경고횟수 기준선 (의심수준 50)
+    #redline=[] # 경고횟수 기준선 (의심수준 50)
     ###########
 
     UserName = name1
@@ -377,6 +377,7 @@ def main(args):
     # -----------------------------s------------------------------------------
         # Get log consistently
         print("<< *의심수준:", yellocard, " || ", "*경고횟수:", redcard, " >>")
+	yellolist.append(yellocard);
         #cv2.destroyWindow('Warning')
         if redcard==1:
             warning_time1=datetime.now()
@@ -406,6 +407,14 @@ def main(args):
                 messagebox.showerror("Warning","Camera angle OUT, Test exit")
 
                 TxtOpen()
+		
+		# 그래프 출력
+                plt.xlabel('Time')
+                plt.ylabel('Suspicious Level')
+                plt.plot(yellolist,'b')
+                #plt.plot(redline,'r-',label='Point Of Warning')
+                #plt.legend()
+                plt.show()
 
 
                 window.destroy()
@@ -450,16 +459,17 @@ def main(args):
             # data = open('C:/Capstone/result_data.txt', 'r')
             # contents = data.read()
             # messagebox.showinfo("결과 출력",contents)
+	    
+	
+	    TxtOpen()
 		
 	    # 그래프 출력
             plt.xlabel('Time')
             plt.ylabel('Suspicious Level')
-            plt.plot(yellolist,'b',redline,'r-')
+            plt.plot(yellolist,'b')
+            #plt.plot(redline,'r-',label='Point Of Warning')
+            #plt.legend()
             plt.show()
-
-
-            TxtOpen()
-
 
             window.destroy()
           #  f.close()
@@ -486,13 +496,15 @@ def main(args):
             PrintResult(yellocard, redcard)
             Fail(timee, redcard)
 	
+	    TxtOpen()
+		
 	    # 그래프 출력
             plt.xlabel('Time')
             plt.ylabel('Suspicious Level')
-            plt.plot(yellolist,'b',redline,'r-')
+            plt.plot(yellolist,'b')
+            #plt.plot(redline,'r-',label='Point Of Warning')
+            #plt.legend()
             plt.show()
-
-            TxtOpen()
 
             window.destroy()
             break
@@ -512,16 +524,17 @@ def main(args):
             # contents = data.read()
             # messagebox.showinfo("결과 출력",contents)
             
-           # f.close()
+            # f.close()
+		
+	    TxtOpen()
 		
 	    # 그래프 출력
             plt.xlabel('Time')
             plt.ylabel('Suspicious Level')
-            plt.plot(yellolist,'b',redline,'r-')
+            plt.plot(yellolist,'b')
+            #plt.plot(redline,'r-',label='Point Of Warning')
+            #plt.legend()
             plt.show()
-
-
-            TxtOpen()
 
 
             window.destroy()
